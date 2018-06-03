@@ -37,7 +37,7 @@ io.on('connection', socket => {
       if (receiverSocketId) {
         io.sockets.connected[receiverSocketId].emit(
           'message_received',
-          content.message
+          result
         );
       }
     } catch (err) {
