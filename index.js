@@ -17,7 +17,7 @@ io.on('connection', socket => {
 
       console.log(
         `Message sent by ${content.sender} to ${
-          content.sender
+          content.receiver
         } saved under _id ${result._id}`
       );
     } catch (err) {
