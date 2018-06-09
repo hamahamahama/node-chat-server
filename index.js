@@ -6,7 +6,9 @@ const PORT = process.env.PORT || 3000;
 
 require('./init'); // Init MongoDB connection
 
-const USERS_CHATS = {};
+const USERS_CHATS = {
+  // 'userId': 'socketId'
+};
 
 const Message = require('./models/message');
 
@@ -32,14 +34,28 @@ io.on('connection', socket => {
       // Send back the full message object saved in the DB.
       fn(result);
 
+      // hne nekhdho id socket mtaa li bech yekbel msg
       const receiverSocketId = USERS_CHATS[content.receiver];
 
       if (receiverSocketId) {
-        io.sockets.connected[receiverSocketId].emit(
-          'message_received',
-          result
-        );
+        io.sockets.connected[receiverSocketId].emit('message_received', result);
       }
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+  socket.on('mark_as_read', async (msgsIds, fn) => {
+    try {
+      const res = await Message.updateMany(
+        {
+          _id: { $in: msgsIds }
+        },
+        { $set: { seen: true } }
+      );
+
+      console.log(res);
+      fn(res);
     } catch (err) {
       console.log(err);
     }
